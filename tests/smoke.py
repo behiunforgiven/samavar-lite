@@ -16,7 +16,7 @@ import time
 import warnings
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-WORK = tempfile.mkdtemp(prefix="samovar-lite-smoke-")
+WORK = tempfile.mkdtemp(prefix="samavar-lite-smoke-")
 os.environ["XDG_CONFIG_HOME"] = os.path.join(WORK, "config")
 sys.path.insert(0, ROOT)
 if os.environ.get("WAYLAND_DISPLAY") and not os.environ.get("QT_QPA_PLATFORM"):
@@ -178,7 +178,7 @@ def main():
 
     p.close()
     wait(300)
-    check("settings were written", os.path.exists(os.path.join(WORK, "config", "samovar-lite", "settings.json")))
+    check("settings were written", os.path.exists(os.path.join(WORK, "config", "samavar-lite", "settings.json")))
     shutil.rmtree(WORK, ignore_errors=True)
     print("\n" + ("ALL PASSED" if not FAILED else "FAILED: " + ", ".join(FAILED)))
     return 1 if FAILED else 0

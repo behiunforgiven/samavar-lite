@@ -94,7 +94,7 @@ class MenuButton(QWidget):
 
     clicked = Signal()
 
-    def __init__(self, text: str = "Samovar Lite", parent=None):
+    def __init__(self, text: str = "Samavar Lite", parent=None):
         super().__init__(parent)
         self.text = text
         self._hover = False

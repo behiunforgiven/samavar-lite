@@ -1,11 +1,11 @@
-# Contributing to Samovar Lite
+# Contributing to Samavar Lite
 
 Thanks for wanting to help. Bug reports, fixes, and reports of "this is not how PotPlayer behaves" are
 all welcome.
 
 ## Reporting a problem
 
-Open an [issue](https://github.com/AliMilani/samovar-lite/issues/new/choose) and include what the form asks
+Open an [issue](https://github.com/AliMilani/samavar-lite/issues/new/choose) and include what the form asks
 for. The text from **Ctrl+F1** (Playback/System Info, "Copy All") answers most of the questions about
 your system and the file at once.
 
@@ -14,13 +14,13 @@ For security problems, see [SECURITY.md](SECURITY.md) instead of opening a publi
 ## Setting up
 
 ```sh
-git clone https://github.com/AliMilani/samovar-lite.git
-cd samovar-lite
+git clone https://github.com/AliMilani/samavar-lite.git
+cd samavar-lite
 ./install.sh --no-desktop
 .venv/bin/python -m pip install pytest ruff
 ```
 
-Run from the checkout with `.venv/bin/samovar-lite`. It reads your normal settings; point
+Run from the checkout with `.venv/bin/samavar-lite`. It reads your normal settings; point
 `XDG_CONFIG_HOME` somewhere else if you want a clean slate.
 
 ## Before you open a pull request
@@ -41,7 +41,7 @@ QT_QPA_PLATFORM=xcb LIBGL_ALWAYS_SOFTWARE=1 xvfb-run -a -s "-screen 0 1920x1080x
 ## What makes a change easy to merge
 
 - **One topic per pull request**, with a description of what changes for the user.
-- **Behaviour first.** When PotPlayer has an established behaviour for something, Samovar Lite follows it
+- **Behaviour first.** When PotPlayer has an established behaviour for something, Samavar Lite follows it
   unless Linux makes that impossible. Say so in the description if you deviate.
 - **No third-party artwork.** Every glyph is drawn in `samovar_lite/skin.py` from primitives. Do not add
   icons, skins or other assets taken from PotPlayer or anywhere else.

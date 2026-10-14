@@ -1,4 +1,4 @@
-"""Persistent settings stored as one JSON file under ~/.config/samovar-lite."""
+"""Persistent settings stored as one JSON file under ~/.config/samavar-lite."""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ import json
 import os
 import tempfile
 
-CONFIG_DIR = os.path.join(os.environ.get("XDG_CONFIG_HOME") or os.path.expanduser("~/.config"), "samovar-lite")
+CONFIG_DIR = os.path.join(os.environ.get("XDG_CONFIG_HOME") or os.path.expanduser("~/.config"), "samavar-lite")
 CONFIG_FILE = os.path.join(CONFIG_DIR, "settings.json")
 # Settings written before the project was renamed; read once if the new file does not exist yet.
 LEGACY_FILE = os.path.join(os.path.dirname(CONFIG_DIR), "fast-pot-player", "settings.json")
@@ -33,6 +33,7 @@ DEFAULTS = {
     "seek_large": 60,
     "seek_huge": 300,
     "volume_step": 5,
+    "wheel_action": "seek",  # seek | volume | frame
     "hwdec": True,
     "sub_font": "",
     "sub_size": 44,
@@ -72,6 +73,10 @@ class Settings:
 
     def __getitem__(self, key):
         return self.data.get(key, DEFAULTS.get(key))
+
+    def get(self, key, default=None):
+        val = self.data.get(key, DEFAULTS.get(key))
+        return default if val is None else val
 
     def __setitem__(self, key, value):
         self.data[key] = value

@@ -367,7 +367,7 @@ class PreferencesDialog(QDialog):
         self.use_x11.setChecked(bool(s["use_x11"]))
         form.addRow(self.use_x11)
         self.shot_dir = QLineEdit(s["screenshot_dir"])
-        self.shot_dir.setPlaceholderText("~/Pictures/Samovar Lite")
+        self.shot_dir.setPlaceholderText("~/Pictures/Samavar Lite")
         browse = QPushButton("Browse...")
         browse.clicked.connect(self._browse_shots)
         row = QHBoxLayout()
@@ -397,6 +397,15 @@ class PreferencesDialog(QDialog):
         self.volume_step.setSuffix(" %")
         self.volume_step.setValue(int(s["volume_step"]))
         form.addRow("Volume step", self.volume_step)
+        self.wheel_action = QComboBox()
+        for label, mode in (
+            ("Seek", "seek"),
+            ("Volume", "volume"),
+            ("Frame Step", "frame"),
+        ):
+            self.wheel_action.addItem(label, mode)
+        self.wheel_action.setCurrentIndex(max(0, self.wheel_action.findData(s["wheel_action"])))
+        form.addRow("Mouse wheel action", self.wheel_action)
         self.hwdec = QCheckBox("Use hardware video decoding when available")
         self.hwdec.setChecked(bool(s["hwdec"]))
         form.addRow(self.hwdec)
@@ -476,6 +485,7 @@ class PreferencesDialog(QDialog):
         for key, spin in self.seeks.items():
             s[key] = spin.value()
         s["volume_step"] = self.volume_step.value()
+        s["wheel_action"] = self.wheel_action.currentData()
         s["sub_font"] = "" if self.sub_font_default.isChecked() else self.sub_font.currentFont().family()
         s["sub_size"] = self.sub_size.value()
         s["sub_bold"] = self.sub_bold.isChecked()

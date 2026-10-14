@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to Samovar Lite are recorded here. The format follows
+All notable changes to Samavar Lite are recorded here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
@@ -40,5 +40,5 @@ First public release.
 - Window left at the wrong size when a file opened while a full-screen transition was in progress
   on Wayland.
 
-[Unreleased]: https://github.com/AliMilani/samovar-lite/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/AliMilani/samovar-lite/releases/tag/v1.0.0
+[Unreleased]: https://github.com/AliMilani/samavar-lite/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/AliMilani/samavar-lite/releases/tag/v1.0.0

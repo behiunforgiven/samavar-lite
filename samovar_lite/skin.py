@@ -276,7 +276,7 @@ def draw_icon(p: QPainter, name: str, cx: float, cy: float, color: QColor):
 _LOGO_PATHS: dict[str, QPainterPath] = {}
 
 
-def draw_logo(p: QPainter, cx: float, cy: float, scale: float = 1.0, text: str = "Samovar Lite"):
+def draw_logo(p: QPainter, cx: float, cy: float, scale: float = 1.0, text: str = "Samavar Lite"):
     """Idle-screen watermark: a dark disc with a play triangle, and the application name beside it."""
     path = _LOGO_PATHS.get(text)
     if path is None:
@@ -311,7 +311,7 @@ def draw_logo(p: QPainter, cx: float, cy: float, scale: float = 1.0, text: str =
 
 
 def app_icon_pixmap(size: int = 256):
-    """Application icon, drawn at run time: a yellow samovar with a play symbol on a dark tile."""
+    """Application icon, drawn at run time: a yellow samavar with a play symbol on a dark tile."""
     from PySide6.QtGui import QPixmap
 
     pm = QPixmap(size, size)

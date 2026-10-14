@@ -38,7 +38,7 @@ jobs:
             echo "### Install"
             echo
             echo '```sh'
-            echo "git clone --branch $GITHUB_REF_NAME https://github.com/${GITHUB_REPOSITORY}.git && cd samovar-lite && ./install.sh"
+            echo "git clone --branch $GITHUB_REF_NAME https://github.com/${GITHUB_REPOSITORY}.git && cd samavar-lite && ./install.sh"
             echo '```'
             echo
             echo "or, with libmpv already installed: \`pipx install samovar_lite-$VERSION-py3-none-any.whl\`"
@@ -47,4 +47,4 @@ jobs:
       - name: Publish
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" dist/* --title "Samovar Lite $VERSION" --notes-file notes.md --verify-tag
+        run: gh release create "$GITHUB_REF_NAME" dist/* --title "Samavar Lite $VERSION" --notes-file notes.md --verify-tag

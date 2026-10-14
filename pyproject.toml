@@ -3,7 +3,7 @@ requires = ["hatchling>=1.27"]
 build-backend = "hatchling.build"
 
 [project]
-name = "samovar-lite"
+name = "samavar-lite"
 dynamic = ["version"]
 description = "PotPlayer-style media player for Linux and macOS, built on libmpv and Qt"
 readme = "README.md"
@@ -36,12 +36,12 @@ dependencies = [
 dev = ["pytest>=8", "ruff==0.16.10"]
 
 [project.gui-scripts]
-samovar-lite = "samovar_lite.app:main"
+samavar-lite = "samovar_lite.app:main"
 
 [project.urls]
-Homepage = "https://github.com/AliMilani/samovar-lite"
-Issues = "https://github.com/AliMilani/samovar-lite/issues"
-Changelog = "https://github.com/AliMilani/samovar-lite/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/AliMilani/samavar-lite"
+Issues = "https://github.com/AliMilani/samavar-lite/issues"
+Changelog = "https://github.com/AliMilani/samavar-lite/blob/main/CHANGELOG.md"
 
 [tool.hatch.version]
 path = "samovar_lite/__init__.py"

@@ -37,7 +37,7 @@ from .util import (
 )
 from .widgets import ControlBar, Logo, Osd, SeekBar, SeekBubble, TitleBar, VolumeBar
 
-IPC_NAME = "samovar-lite-%d" % os.getuid()
+IPC_NAME = "samavar-lite-%d" % os.getuid()
 MOD_MASK = (Qt.ShiftModifier | Qt.ControlModifier | Qt.AltModifier | Qt.MetaModifier | Qt.KeypadModifier).value
 KEYPAD = Qt.KeypadModifier.value
 SHIFT = Qt.ShiftModifier.value
@@ -139,14 +139,14 @@ class Inhibitor:
         try:
             if on:
                 self._serial += 1
-                self._name = "samovar-lite-inhibit-%d" % self._serial
+                self._name = "samavar-lite-inhibit-%d" % self._serial
                 bus = QDBusConnection.connectToBus(QDBusConnection.SessionBus, self._name)
                 if not bus.isConnected():
                     return
                 iface = QDBusInterface(
                     "org.freedesktop.ScreenSaver", "/org/freedesktop/ScreenSaver", "org.freedesktop.ScreenSaver", bus
                 )
-                iface.call("Inhibit", "Samovar Lite", "Playing video")
+                iface.call("Inhibit", "Samavar Lite", "Playing video")
             else:
                 QDBusConnection.disconnectFromBus(self._name)
             self.active = on
@@ -264,7 +264,7 @@ class Player(QWidget):
         self.setWindowFlags(
             Qt.Window | Qt.FramelessWindowHint | Qt.WindowMinimizeButtonHint | Qt.WindowMaximizeButtonHint
         )
-        self.setWindowTitle("Samovar Lite")
+        self.setWindowTitle("Samavar Lite")
         self.setMinimumSize(336, 250)
         self.setAcceptDrops(True)
         self.setFocusPolicy(Qt.StrongFocus)
@@ -368,7 +368,7 @@ class Player(QWidget):
         va.middleClicked.connect(self.toggle_fullscreen)
         va.extraButton.connect(lambda d: self.next_file() if d > 0 else self.prev_file())
         va.contextRequested.connect(self.show_menu)
-        va.wheel.connect(self.volume_step)
+        va.wheel.connect(self._video_wheel)
         va.dragStarted.connect(self._start_move)
         va.moved.connect(self._video_mouse_moved)
         va.video.ready.connect(self._on_gl_ready)
@@ -799,7 +799,7 @@ class Player(QWidget):
     def _update_title(self):
         if not self.has_file() or not self.current_path:
             self.title.set_title("")
-            self.setWindowTitle("Samovar Lite")
+            self.setWindowTitle("Samavar Lite")
             return
         path = self.current_path
         name = (self.state.get("media-title") or path) if is_url(path) else title_of(path)
@@ -808,7 +808,7 @@ class Player(QWidget):
         row = self.playlist.current_row()
         prefix = "[%d/%d] " % (row + 1, count) if count > 1 and row >= 0 else ""
         self.title.set_title(prefix + name)
-        self.setWindowTitle(name + " - Samovar Lite")
+        self.setWindowTitle(name + " - Samavar Lite")
 
     # ============================================================================================
     # helpers
@@ -1263,14 +1263,14 @@ class Player(QWidget):
         folder = self.settings["screenshot_dir"]
         if not folder:
             pictures = QStandardPaths.writableLocation(QStandardPaths.PicturesLocation) or os.path.expanduser("~")
-            folder = os.path.join(pictures, "Samovar Lite")
+            folder = os.path.join(pictures, "Samavar Lite")
         return os.path.expanduser(folder)
 
     def screenshot(self, mode: str = "video", clipboard: bool = False):
         if not self.has_file():
             return
         if clipboard:
-            path = os.path.join(tempfile.gettempdir(), "samovar-lite-clip-%d.png" % os.getpid())
+            path = os.path.join(tempfile.gettempdir(), "samavar-lite-clip-%d.png" % os.getpid())
         else:
             folder = self._screenshot_dir()
             try:
@@ -1645,13 +1645,13 @@ class Player(QWidget):
     def show_about(self):
         e = self.engine
         text = (
-            "Samovar Lite %s\n\n"
+            "Samavar Lite %s\n\n"
             "A PotPlayer-style media player for Linux, built on libmpv and Qt.\n"
             "Free software under the GNU GPL, version 3 or later.\n"
             "Not affiliated with Kakao Corp. or PotPlayer.\n\n"
             "mpv:     %s\nffmpeg:  %s\nQt:      %s (%s)\n\n"
             "Right-click the video for the full menu.\n"
-            "Settings: ~/.config/samovar-lite/settings.json"
+            "Settings: ~/.config/samavar-lite/settings.json"
         ) % (
             __version__,
             e.get("mpv-version", "?"),
@@ -1692,6 +1692,17 @@ class Player(QWidget):
         if self.has_file():
             self.toggle_pause()  # undo the pause toggled by the first click
         self.toggle_fullscreen()
+
+    def _video_wheel(self, steps: int):
+        action = self.settings.get("wheel_action", "seek")
+        if action == "volume":
+            self.volume_step(steps)
+        elif action == "frame":
+            direction = 1 if steps > 0 else -1
+            for _ in range(abs(steps)):
+                self.frame_step(direction)
+        else:
+            self.seek_rel(steps * self.settings["seek_small"])
 
     def _video_mouse_moved(self):
         self._mouse_in_video = True
@@ -1888,7 +1899,7 @@ class SamovarApplication(QApplication):
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        prog="samovar-lite", description="PotPlayer-style media player for Linux and macOS."
+        prog="samavar-lite", description="PotPlayer-style media player for Linux and macOS."
     )
     parser.add_argument("files", nargs="*", help="media files, folders, playlists, subtitles or URLs")
     parser.add_argument("--x11", action="store_true", help="run through X11/XWayland (enables always-on-top)")
@@ -1896,7 +1907,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--new", action="store_true", help="start a new instance instead of reusing a running one")
     parser.add_argument("-f", "--fullscreen", action="store_true", help="start in full screen")
     parser.add_argument("--verbose", action="store_true", help="print engine warnings to the terminal")
-    parser.add_argument("--version", action="version", version="Samovar Lite " + __version__)
+    parser.add_argument("--version", action="version", version="Samavar Lite " + __version__)
     args = parser.parse_args(sys.argv[1:] if argv is None else argv)
 
     settings = Settings()
@@ -1915,9 +1926,9 @@ def main(argv: list[str] | None = None) -> int:
 
     paths = [p if is_url(p) else os.path.abspath(p) for p in args.files]
     app = SamovarApplication(sys.argv[:1])
-    app.setApplicationName("Samovar Lite")
-    app.setApplicationDisplayName("Samovar Lite")
-    app.setDesktopFileName("samovar-lite")
+    app.setApplicationName("Samavar Lite")
+    app.setApplicationDisplayName("Samavar Lite")
+    app.setDesktopFileName("samavar-lite")
     if not args.new and send_to_running(paths):
         return 0
     app.setStyle("Fusion")
@@ -1938,7 +1949,7 @@ def main(argv: list[str] | None = None) -> int:
         )
         QMessageBox.critical(
             None,
-            "Samovar Lite",
+            "Samavar Lite",
             "The playback engine could not start:\n\n%s\n\n%s" % (exc, hint),
         )
         return 1

@@ -29,7 +29,7 @@ def find_libmpv_path() -> str | None:
             if p.exists():
                 return str(p)
 
-    # macOS .app bundle Frameworks directory (e.g. Samovar Lite.app/Contents/Frameworks)
+    # macOS .app bundle Frameworks directory (e.g. Samavar Lite.app/Contents/Frameworks)
     exe_dir = Path(sys.executable).parent
     for parent in (exe_dir.parent, Path(__file__).resolve().parent.parent):
         frameworks = parent / "Frameworks"
@@ -131,7 +131,7 @@ class Engine(QObject):
             "volume_max": 100,
             "volume": max(0, min(100, int(settings["volume"]))),
             "mute": bool(settings["mute"]),
-            "audio_client_name": "Samovar Lite",
+            "audio_client_name": "Samavar Lite",
             "screenshot_format": "png",
             "sub_auto": settings["sub_auto"],
             "sub_file_paths": "sub:subs:Sub:Subs:subtitles:Subtitles",

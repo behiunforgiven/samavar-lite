@@ -1,23 +1,23 @@
 <p align="center">
-  <img src="docs/images/icon.png" width="96" alt="Samovar Lite icon">
+  <img src="docs/images/icon.png" width="96" alt="Samavar Lite icon">
 </p>
-<h1 align="center">Samovar Lite</h1>
+<h1 align="center">Samavar Lite</h1>
 <p align="center">
   A PotPlayer-style media player for Linux.<br>
   Drop a video on it, load a subtitle, forget about codecs.
 </p>
 <p align="center">
-  <a href="https://github.com/AliMilani/samovar-lite/actions/workflows/ci.yml"><img src="https://github.com/AliMilani/samovar-lite/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
-  <a href="https://github.com/AliMilani/samovar-lite/releases/latest"><img src="https://img.shields.io/github/v/release/AliMilani/samovar-lite" alt="Latest release"></a>
+  <a href="https://github.com/AliMilani/samavar-lite/actions/workflows/ci.yml"><img src="https://github.com/AliMilani/samavar-lite/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/AliMilani/samavar-lite/releases/latest"><img src="https://img.shields.io/github/v/release/AliMilani/samavar-lite" alt="Latest release"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue" alt="License: GPL-3.0-or-later"></a>
   <img src="https://img.shields.io/badge/python-3.10%2B-blue" alt="Python 3.10+">
   <img src="https://img.shields.io/badge/platform-Linux%20(Wayland%20%26%20X11)-lightgrey" alt="Linux, Wayland and X11">
 </p>
 
-![Samovar Lite playing a video with a Persian subtitle and the playlist open](docs/images/screenshot.png)
+![Samavar Lite playing a video with a Persian subtitle and the playlist open](docs/images/screenshot.png)
 
-Samovar Lite gives Linux the player many people miss after leaving Windows: the compact dark window, the
-mouse habits (click to pause, double-click for full screen, wheel for volume, drag to move), the
+Samavar Lite gives Linux the player many people miss after leaving Windows: the compact dark window, the
+mouse habits (click to pause, double-click for full screen, wheel for seeking, drag to move), the
 right-click menu with everything in it, and the keyboard shortcuts your fingers already know.
 Playback is done by [libmpv](https://mpv.io), so it plays whatever mpv plays, with hardware decoding
 and proper subtitle rendering. The window and controls are Qt 6.
@@ -47,51 +47,51 @@ and proper subtitle rendering. The window and controls are Qt 6.
 On Ubuntu or Debian:
 
 ```sh
-git clone https://github.com/AliMilani/samovar-lite.git
-cd samovar-lite
+git clone https://github.com/AliMilani/samavar-lite.git
+cd samavar-lite
 ./install.sh
 ```
 
-That builds a private Python environment in the folder, adds a `samovar-lite` command and a menu entry with
+That builds a private Python environment in the folder, adds a `samavar-lite` command and a menu entry with
 "Open With" support. Nothing is installed system-wide, except that the script asks for `sudo` once if
 the libmpv library is missing. `./install.sh --remove` undoes it.
 
 Other distributions: install Python 3.10+, libmpv (`mpv-libs`, `libmpv`, `mpv` depending on the
 distribution) and run the same script; or install the wheel from the
-[latest release](https://github.com/AliMilani/samovar-lite/releases/latest) with `pipx install <wheel>`.
+[latest release](https://github.com/AliMilani/samavar-lite/releases/latest) with `pipx install <wheel>`.
 
 ### macOS
 
 Install `libmpv` via Homebrew (`brew install mpv`) and run:
 
 ```sh
-git clone https://github.com/AliMilani/samovar-lite.git
-cd samovar-lite
+git clone https://github.com/AliMilani/samavar-lite.git
+cd samavar-lite
 ./install_mac.sh
 ```
 
-Or build a standalone `Samovar Lite.app` bundle and DMG disk image:
+Or build a standalone `Samavar Lite.app` bundle and DMG disk image:
 
 ```sh
 ./build_app.sh
-# Creates dist/Samovar Lite.app and dist/Samovar-Lite-<version>.dmg
+# Creates dist/Samavar Lite.app and dist/Samavar-Lite-<version>.dmg
 ```
 
 ## Use
 
 ```sh
-samovar-lite                      # empty window: drop something on it
-samovar-lite movie.mkv            # play a file
-samovar-lite movie.mkv subs.srt   # ... with a specific subtitle
-samovar-lite ~/Videos/Show/       # queue a folder
-samovar-lite https://...          # play a URL (sites like YouTube need yt-dlp)
+samavar-lite                      # empty window: drop something on it
+samavar-lite movie.mkv            # play a file
+samavar-lite movie.mkv subs.srt   # ... with a specific subtitle
+samavar-lite ~/Videos/Show/       # queue a folder
+samavar-lite https://...          # play a URL (sites like YouTube need yt-dlp)
 ```
 
 Options: `-f` full screen, `--x11` run through XWayland (enables always-on-top), `--new` open a second
 window, `--verbose` print engine messages.
 
 **Mouse on the video:** click = play/pause, double-click = full screen, drag = move the window,
-wheel = volume, middle click = full screen, right click = menu, back/forward buttons = previous/next
+wheel = seek (configurable to volume or frame step in Preferences), middle click = full screen, right click = menu, back/forward buttons = previous/next
 file. In full screen, move to the bottom edge for the controls, the top edge for the title bar and the
 right edge for the playlist.
 
@@ -130,7 +130,7 @@ right edge for the playlist.
 
 </details>
 
-Settings are stored in `~/.config/samovar-lite/settings.json`.
+Settings are stored in `~/.config/samavar-lite/settings.json`.
 
 ## Limits
 
@@ -140,7 +140,7 @@ Settings are stored in `~/.config/samovar-lite/settings.json`.
 - Not implemented: skins, filter management, TV and capture devices, 3D, bookmarks, and media-key
   control while the window is not focused (MPRIS).
 - Tested on Ubuntu with GNOME on Wayland and under X11. Other desktops should work but are less
-  travelled; please [report](https://github.com/AliMilani/samovar-lite/issues) what you find.
+  travelled; please [report](https://github.com/AliMilani/samavar-lite/issues) what you find.
 
 ## Troubleshooting
 
@@ -149,11 +149,11 @@ Settings are stored in `~/.config/samovar-lite/settings.json`.
   wakes its NVIDIA GPU for video, install the VA-API driver (`sudo apt install intel-media-va-driver`
   on Intel).
 - **Black horizontal stripes on Intel graphics.** Mesa's Intel driver can corrupt the lookup textures
-  of mpv's high-quality scalers when the video size changes. Samovar Lite avoids those scalers on Intel
+  of mpv's high-quality scalers when the video size changes. Samavar Lite avoids those scalers on Intel
   renderers; `SAMOVAR_LITE_NO_GPU_WORKAROUNDS=1` turns that off if you want mpv's defaults back.
 - **libmpv** is taken from the system (`sudo apt install libmpv2`). `SAMOVAR_LITE_LIBMPV=/path/to/libmpv.so.2`
   selects a specific build.
-- `samovar-lite --verbose` prints engine messages; Ctrl+F1 shows the most recent ones.
+- `samavar-lite --verbose` prints engine messages; Ctrl+F1 shows the most recent ones.
 
 ## Development
 
@@ -171,12 +171,12 @@ and `dialogs.py` are what their names say. See [CONTRIBUTING.md](CONTRIBUTING.md
 
 ## License and credits
 
-Samovar Lite is free software under the [GNU General Public License, version 3 or later](LICENSE).
+Samavar Lite is free software under the [GNU General Public License, version 3 or later](LICENSE).
 
 It stands on [mpv](https://mpv.io) and [FFmpeg](https://ffmpeg.org) for playback,
 [Qt for Python](https://doc.qt.io/qtforpython-6/) for the interface and
 [python-mpv](https://github.com/jaseg/python-mpv) to connect the two.
 
-Samovar Lite is an independent project. It is not affiliated with or endorsed by Kakao Corp.; PotPlayer is
-their product and trademark, mentioned here only to describe what Samovar Lite feels like to use. All
-controls are drawn by Samovar Lite's own code; no third-party artwork is included.
+Samavar Lite is an independent project. It is not affiliated with or endorsed by Kakao Corp.; PotPlayer is
+their product and trademark, mentioned here only to describe what Samavar Lite feels like to use. All
+controls are drawn by Samavar Lite's own code; no third-party artwork is included.

@@ -1,8 +1,8 @@
 #!/bin/bash
-# Samovar Lite installer for macOS.
+# Samavar Lite installer for macOS.
 #
-#   ./install_mac.sh               install/update: Python environment, `samovar-lite` command, build app bundle
-#   ./install_mac.sh --install-app install Samovar Lite.app to /Applications
+#   ./install_mac.sh               install/update: Python environment, `samavar-lite` command, build app bundle
+#   ./install_mac.sh --install-app install Samavar Lite.app to /Applications
 #   ./install_mac.sh --no-app      only build the Python environment in .venv
 #   ./install_mac.sh --remove      remove the command and application
 set -e
@@ -11,12 +11,12 @@ DIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$DIR"
 
 BIN="$HOME/.local/bin"
-APP_DEST="/Applications/Samovar Lite.app"
+APP_DEST="/Applications/Samavar Lite.app"
 
 if [ "$1" = "--remove" ]; then
-    rm -f "$BIN/samovar-lite"
-    rm -rf "$APP_DEST" "$HOME/Applications/Samovar Lite.app" "dist/Samovar Lite.app"
-    echo "Removed the samovar-lite command and application. Settings remain in ~/.config/samovar-lite."
+    rm -f "$BIN/samavar-lite"
+    rm -rf "$APP_DEST" "$HOME/Applications/Samavar Lite.app" "dist/Samavar Lite.app"
+    echo "Removed the samavar-lite command and application. Settings remain in ~/.config/samavar-lite."
     exit 0
 fi
 
@@ -65,11 +65,11 @@ fi
 
 # 3. CLI command
 mkdir -p "$BIN"
-ln -sf "$DIR/.venv/bin/samovar-lite" "$BIN/samovar-lite"
+ln -sf "$DIR/.venv/bin/samavar-lite" "$BIN/samavar-lite"
 
 if [ "$1" = "--no-app" ]; then
-    echo "Environment ready: $DIR/.venv/bin/samovar-lite"
-    echo "CLI command created: $BIN/samovar-lite"
+    echo "Environment ready: $DIR/.venv/bin/samavar-lite"
+    echo "CLI command created: $BIN/samavar-lite"
     exit 0
 fi
 
@@ -79,14 +79,14 @@ fi
 if [ "$1" = "--install-app" ]; then
     echo "Installing to /Applications..."
     rm -rf "$APP_DEST"
-    cp -R "dist/Samovar Lite.app" "$APP_DEST"
+    cp -R "dist/Samavar Lite.app" "$APP_DEST"
     echo "Installed to $APP_DEST"
 fi
 
 echo ""
 echo "Installation complete!"
-echo "  • CLI command: $BIN/samovar-lite"
-echo "  • App bundle:  $DIR/dist/Samovar Lite.app"
+echo "  • CLI command: $BIN/samavar-lite"
+echo "  • App bundle:  $DIR/dist/Samavar Lite.app"
 if [ "$1" != "--install-app" ]; then
     echo "Tip: Run './install_mac.sh --install-app' to copy it to your Applications folder."
 fi

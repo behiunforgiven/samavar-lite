@@ -1,8 +1,8 @@
 #!/bin/bash
-# Builds a standalone macOS Application Bundle (Samovar Lite.app) and DMG.
+# Builds a standalone macOS Application Bundle (Samavar Lite.app) and DMG.
 #
-#   ./build_app.sh           # Builds dist/Samovar Lite.app and dist/Samovar-Lite-<version>.dmg
-#   ./build_app.sh --no-dmg  # Only builds dist/Samovar Lite.app
+#   ./build_app.sh           # Builds dist/Samavar Lite.app and dist/Samavar-Lite-<version>.dmg
+#   ./build_app.sh --no-dmg  # Only builds dist/Samavar Lite.app
 set -e
 
 DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -42,15 +42,15 @@ for s in [16, 32, 64, 128, 256, 512]:
 iconutil -c icns build/SamovarLite.iconset -o build/SamovarLite.icns
 
 # 3. Build .app bundle with PyInstaller
-echo "Building Samovar Lite.app with PyInstaller..."
-rm -rf "dist/Samovar Lite" "dist/Samovar Lite.app"
+echo "Building Samavar Lite.app with PyInstaller..."
+rm -rf "dist/Samavar Lite" "dist/Samavar Lite.app"
 "$PYTHON" -m PyInstaller \
-    --name="Samovar Lite" \
+    --name="Samavar Lite" \
     --windowed \
     --noconfirm \
     --icon="build/SamovarLite.icns" \
     --collect-submodules="samovar_lite" \
-    --osx-bundle-identifier="com.samovar-lite.app" \
+    --osx-bundle-identifier="com.samavar-lite.app" \
     samovar_lite/__main__.py
 
 # 4. Enhance Info.plist with version and supported media types for Finder
@@ -59,7 +59,7 @@ echo "Updating Info.plist with file associations..."
 import plistlib
 from samovar_lite import __version__
 
-plist_path = 'dist/Samovar Lite.app/Contents/Info.plist'
+plist_path = 'dist/Samavar Lite.app/Contents/Info.plist'
 with open(plist_path, 'rb') as fp:
     pl = plistlib.load(fp)
 
@@ -85,18 +85,18 @@ with open(plist_path, 'wb') as fp:
 
 # 5. Ad-hoc codesign the bundle
 echo "Signing application bundle..."
-codesign --force --deep -s - "dist/Samovar Lite.app"
+codesign --force --deep -s - "dist/Samavar Lite.app"
 
 VERSION=$("$PYTHON" -c "import samovar_lite; print(samovar_lite.__version__)")
-echo "Built: dist/Samovar Lite.app (v$VERSION)"
+echo "Built: dist/Samavar Lite.app (v$VERSION)"
 
 # 6. Build DMG disk image (unless --no-dmg passed)
 if [ "$1" != "--no-dmg" ] && command -v hdiutil >/dev/null 2>&1; then
-    DMG_NAME="Samovar-Lite-$VERSION.dmg"
+    DMG_NAME="Samavar-Lite-$VERSION.dmg"
     echo "Creating DMG disk image: dist/$DMG_NAME..."
     rm -f "dist/$DMG_NAME"
-    hdiutil create -volname "Samovar Lite" -srcfolder "dist/Samovar Lite.app" -ov -format UDZO "dist/$DMG_NAME"
+    hdiutil create -volname "Samavar Lite" -srcfolder "dist/Samavar Lite.app" -ov -format UDZO "dist/$DMG_NAME"
     echo "Created: dist/$DMG_NAME"
 fi
 
-echo "Done! You can launch the app with: open 'dist/Samovar Lite.app'"
+echo "Done! You can launch the app with: open 'dist/Samavar Lite.app'"

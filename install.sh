@@ -1,7 +1,7 @@
 #!/bin/sh
-# Samovar Lite installer for the current user.
+# Samavar Lite installer for the current user.
 #
-#   ./install.sh               install or update: Python environment, `samovar-lite` command, menu entry
+#   ./install.sh               install or update: Python environment, `samavar-lite` command, menu entry
 #   ./install.sh --no-desktop  only build the environment in .venv (development, CI)
 #   ./install.sh --remove      remove the command and the menu entry again
 #
@@ -23,9 +23,9 @@ BIN="$HOME/.local/bin"
 VENDORED="$DIR/vendor/libmpv/usr/lib/x86_64-linux-gnu/libmpv.so.2"
 
 if [ "$1" = "--remove" ]; then
-    rm -f "$APPS/samovar-lite.desktop" "$ICONS/samovar-lite.png" "$BIN/samovar-lite"
+    rm -f "$APPS/samavar-lite.desktop" "$ICONS/samavar-lite.png" "$BIN/samavar-lite"
     update-desktop-database "$APPS" 2>/dev/null || true
-    echo "Removed the samovar-lite command and menu entry. Settings stay in ~/.config/samovar-lite."
+    echo "Removed the samavar-lite command and menu entry. Settings stay in ~/.config/samavar-lite."
     exit 0
 fi
 
@@ -78,37 +78,37 @@ if ! libmpv_ok; then
 fi
 
 if [ "$1" = "--no-desktop" ]; then
-    echo "Environment ready: $DIR/.venv/bin/samovar-lite"
+    echo "Environment ready: $DIR/.venv/bin/samavar-lite"
     exit 0
 fi
 
 # 3. Command, icon and menu entry
 mkdir -p "$APPS" "$ICONS" "$BIN"
-ln -sf "$DIR/.venv/bin/samovar-lite" "$BIN/samovar-lite"
+ln -sf "$DIR/.venv/bin/samavar-lite" "$BIN/samavar-lite"
 QT_QPA_PLATFORM=offscreen .venv/bin/python -c "
 import sys
 from PySide6.QtGui import QGuiApplication
 from samovar_lite import skin
 app = QGuiApplication(sys.argv[:1])
 skin.app_icon_pixmap(256).save(sys.argv[1])
-" "$ICONS/samovar-lite.png"
-cat > "$APPS/samovar-lite.desktop" <<DESKTOP
+" "$ICONS/samavar-lite.png"
+cat > "$APPS/samavar-lite.desktop" <<DESKTOP
 [Desktop Entry]
 Type=Application
-Name=Samovar Lite
+Name=Samavar Lite
 GenericName=Media Player
 Comment=Play videos and music
-Exec="$DIR/.venv/bin/samovar-lite" %U
-Icon=samovar-lite
+Exec="$DIR/.venv/bin/samavar-lite" %U
+Icon=samavar-lite
 Terminal=false
 Categories=AudioVideo;Video;Player;
-StartupWMClass=samovar-lite
+StartupWMClass=samavar-lite
 MimeType=video/mp4;video/x-matroska;video/webm;video/x-msvideo;video/quicktime;video/mpeg;video/x-flv;video/x-ms-wmv;video/mp2t;video/3gpp;video/ogg;video/x-m4v;audio/mpeg;audio/flac;audio/x-flac;audio/mp4;audio/ogg;audio/x-wav;audio/wav;audio/aac;audio/x-matroska;audio/opus;application/x-subrip;application/vnd.apple.mpegurl;audio/x-mpegurl;
 DESKTOP
 update-desktop-database "$APPS" 2>/dev/null || true
 
-echo "Installed. Start Samovar Lite from the application menu, or run: samovar-lite movie.mkv"
+echo "Installed. Start Samavar Lite from the application menu, or run: samavar-lite movie.mkv"
 case ":$PATH:" in
     *":$BIN:"*) ;;
-    *) echo "Note: $BIN is not on your PATH yet; log out and in again, or run $BIN/samovar-lite" ;;
+    *) echo "Note: $BIN is not on your PATH yet; log out and in again, or run $BIN/samavar-lite" ;;
 esac

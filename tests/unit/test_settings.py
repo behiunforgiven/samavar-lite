@@ -9,6 +9,20 @@ def test_defaults_when_file_is_missing(tmp_path):
     assert settings["volume"] == 100
     assert settings["repeat"] == "off"
     assert settings["sub_codepage"] == "cp1256"
+    assert settings["wheel_action"] == "seek"
+    assert settings.get("wheel_action") == "seek"
+    assert settings.get("non_existent_key", "fallback") == "fallback"
+
+
+def test_wheel_action_setting(tmp_path):
+    path = tmp_path / "settings.json"
+    settings = Settings(str(path))
+    assert settings["wheel_action"] == "seek"
+    settings["wheel_action"] = "frame"
+    settings.save()
+    reloaded = Settings(str(path))
+    assert reloaded["wheel_action"] == "frame"
+    assert reloaded.get("wheel_action") == "frame"
 
 
 def test_round_trip_keeps_unicode_paths(tmp_path):
@@ -58,7 +72,7 @@ def test_settings_from_before_the_rename_are_picked_up(tmp_path, monkeypatch):
     legacy = tmp_path / "fast-pot-player" / "settings.json"
     legacy.parent.mkdir()
     legacy.write_text(json.dumps({"volume": 35}), encoding="utf-8")
-    current = tmp_path / "samovar-lite" / "settings.json"
+    current = tmp_path / "samavar-lite" / "settings.json"
     monkeypatch.setattr(settings_module, "CONFIG_FILE", str(current))
     monkeypatch.setattr(settings_module, "LEGACY_FILE", str(legacy))
     settings = Settings(str(current))
