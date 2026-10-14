@@ -146,12 +146,14 @@ def main():
 
     QTest.keyClick(p, Qt.Key_Return)
     check("Enter goes full screen without chrome", wait_until(lambda: p.isFullScreen() and not p.ctrl.isVisible(), 5))
-    wait(400)  # nobody leaves full screen in the same instant they entered it
+    fs_settle = 800 if sys.platform == "darwin" else 400
+    wait(fs_settle)  # nobody leaves full screen in the same instant they entered it
     p._fs_mouse(QPoint(p.width() // 2, p.height() - 2))
     shown = wait_until(lambda: p.ctrl.isVisible() and p.seek.isVisible(), 3)
     check("pointer at the bottom edge shows the controls", shown)
     QTest.keyClick(p, Qt.Key_Escape)
     check("Esc leaves full screen", wait_until(lambda: not p.isFullScreen() and p.ctrl.isVisible(), 5))
+    wait(fs_settle)
 
     QTest.keyClick(p, Qt.Key_PageDown)
     switched = wait_until(lambda: p.current_path == two and p._file_ready and p._last_pos > 0.5, 20)

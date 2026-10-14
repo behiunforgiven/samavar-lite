@@ -60,6 +60,23 @@ Other distributions: install Python 3.10+, libmpv (`mpv-libs`, `libmpv`, `mpv` d
 distribution) and run the same script; or install the wheel from the
 [latest release](https://github.com/AliMilani/samovar-lite/releases/latest) with `pipx install <wheel>`.
 
+### macOS
+
+Install `libmpv` via Homebrew (`brew install mpv`) and run:
+
+```sh
+git clone https://github.com/AliMilani/samovar-lite.git
+cd samovar-lite
+./install_mac.sh
+```
+
+Or build a standalone `Samovar Lite.app` bundle and DMG disk image:
+
+```sh
+./build_app.sh
+# Creates dist/Samovar Lite.app and dist/Samovar-Lite-<version>.dmg
+```
+
 ## Use
 
 ```sh

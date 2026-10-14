@@ -14,11 +14,49 @@ from PySide6.QtGui import QOpenGLContext
 from PySide6.QtOpenGL import QOpenGLFramebufferObject
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 
-# Source checkouts may carry a libmpv unpacked by install.sh; SAMOVAR_LITE_LIBMPV overrides both.
-_VENDORED = Path(
-    os.environ.get("SAMOVAR_LITE_LIBMPV")
-    or Path(__file__).resolve().parent.parent / "vendor/libmpv/usr/lib/x86_64-linux-gnu/libmpv.so.2"
-)
+
+def find_libmpv_path() -> str | None:
+    """Locate libmpv shared library across platforms (macOS Homebrew/bundle, Linux, Windows)."""
+    if os.environ.get("SAMOVAR_LITE_LIBMPV"):
+        custom = Path(os.environ["SAMOVAR_LITE_LIBMPV"])
+        if custom.exists():
+            return str(custom)
+
+    # PyInstaller bundled location
+    if hasattr(sys, "_MEIPASS"):
+        for name in ("libmpv.2.dylib", "libmpv.dylib", "libmpv.so.2", "libmpv.so", "mpv-2.dll", "mpv-1.dll"):
+            p = Path(sys._MEIPASS) / name
+            if p.exists():
+                return str(p)
+
+    # macOS .app bundle Frameworks directory (e.g. Samovar Lite.app/Contents/Frameworks)
+    exe_dir = Path(sys.executable).parent
+    for parent in (exe_dir.parent, Path(__file__).resolve().parent.parent):
+        frameworks = parent / "Frameworks"
+        if frameworks.exists():
+            for name in ("libmpv.2.dylib", "libmpv.dylib"):
+                p = frameworks / name
+                if p.exists():
+                    return str(p)
+
+    # macOS Homebrew & MacPorts common locations
+    if sys.platform == "darwin":
+        for p in (
+            Path("/opt/homebrew/lib/libmpv.2.dylib"),
+            Path("/opt/homebrew/lib/libmpv.dylib"),
+            Path("/usr/local/lib/libmpv.2.dylib"),
+            Path("/usr/local/lib/libmpv.dylib"),
+            Path("/opt/local/lib/libmpv.dylib"),
+        ):
+            if p.exists():
+                return str(p)
+
+    # Linux vendored path unpacked by install.sh
+    vendored_linux = Path(__file__).resolve().parent.parent / "vendor/libmpv/usr/lib/x86_64-linux-gnu/libmpv.so.2"
+    if vendored_linux.exists():
+        return str(vendored_linux)
+
+    return None
 
 OBSERVED = (
     "time-pos",
@@ -48,15 +86,16 @@ OBSERVED = (
 
 
 def import_mpv():
-    """Import python-mpv, falling back to the libmpv bundled under vendor/ when none is installed."""
+    """Import python-mpv, resolving the libmpv shared library path across platforms."""
     original = ctypes.util.find_library
 
     def find(name):
         if name != "mpv":
             return original(name)
-        if os.environ.get("SAMOVAR_LITE_LIBMPV") and _VENDORED.exists():
-            return str(_VENDORED)
-        return original(name) or (str(_VENDORED) if _VENDORED.exists() else None)
+        discovered = find_libmpv_path()
+        if discovered:
+            return discovered
+        return original(name)
 
     ctypes.util.find_library = find
     try:
@@ -151,9 +190,11 @@ class Engine(QObject):
 
     @classmethod
     def hwdec_value(cls, enabled: bool) -> str:
-        # Copy-back decoders work with any render surface (X11, Wayland, any GPU vendor).
+        # Copy-back decoders work with any render surface (X11, Wayland, Cocoa, any GPU vendor).
         if not enabled:
             return "no"
+        if sys.platform == "darwin":
+            return "videotoolbox-copy,auto-copy-safe"
         if "nvidia" in cls.gl_renderer.lower():
             return "nvdec-copy,vaapi-copy,auto-copy-safe"
         return "vaapi-copy,nvdec-copy,auto-copy-safe"

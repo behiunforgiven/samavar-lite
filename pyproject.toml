@@ -5,17 +5,19 @@ build-backend = "hatchling.build"
 [project]
 name = "samovar-lite"
 dynamic = ["version"]
-description = "PotPlayer-style media player for Linux, built on libmpv and Qt"
+description = "PotPlayer-style media player for Linux and macOS, built on libmpv and Qt"
 readme = "README.md"
 license = "GPL-3.0-or-later"
 license-files = ["LICENSE"]
 requires-python = ">=3.10"
 authors = [{ name = "Ali Milani" }]
-keywords = ["video", "media player", "mpv", "libmpv", "qt", "pyside6", "linux", "wayland", "subtitles"]
+keywords = ["video", "media player", "mpv", "libmpv", "qt", "pyside6", "linux", "macos", "subtitles"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
+    "Environment :: MacOS X",
     "Environment :: X11 Applications :: Qt",
     "Intended Audience :: End Users/Desktop",
+    "Operating System :: MacOS",
     "Operating System :: POSIX :: Linux",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
@@ -48,7 +50,7 @@ path = "samovar_lite/__init__.py"
 packages = ["samovar_lite"]
 
 [tool.hatch.build.targets.sdist]
-include = ["samovar_lite", "tests", "install.sh", "README.md", "CHANGELOG.md", "LICENSE"]
+include = ["samovar_lite", "tests", "install.sh", "install_mac.sh", "build_app.sh", "README.md", "CHANGELOG.md", "LICENSE"]
 
 [tool.ruff]
 line-length = 120

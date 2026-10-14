@@ -10,3 +10,6 @@ dist/
 
 # libmpv unpacked by install.sh when the system has none
 vendor/
+
+# PyInstaller
+*.spec

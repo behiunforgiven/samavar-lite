@@ -8,6 +8,12 @@
 # Nothing is written outside this folder and ~/.local. Root is only asked for when a required
 # system library (libmpv) is missing and has to come from the distribution.
 set -e
+
+if [ "$(uname -s)" = "Darwin" ]; then
+    DIR="$(cd "$(dirname "$0")" && pwd)"
+    exec "$DIR/install_mac.sh" "$@"
+fi
+
 DIR="$(dirname "$(readlink -f "$0")")"
 cd "$DIR"
 DATA="${XDG_DATA_HOME:-$HOME/.local/share}"

@@ -1,5 +1,9 @@
 import sys
 
-from .app import main
+try:
+    from .app import main
+except ImportError:
+    from samovar_lite.app import main
 
-sys.exit(main())
+if __name__ == "__main__":
+    sys.exit(main())

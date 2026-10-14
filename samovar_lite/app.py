@@ -102,19 +102,36 @@ def canonical_key(event) -> int:
 
 
 class Inhibitor:
-    """Keeps the screen awake while a video plays (org.freedesktop.ScreenSaver over D-Bus).
-
-    The inhibition lives on a private bus connection; dropping the connection releases it.
-    """
+    """Keeps the screen awake while a video plays (caffeinate on macOS, org.freedesktop.ScreenSaver on Linux)."""
 
     def __init__(self):
         self.active = False
         self._serial = 0
         self._name = ""
+        self._caffeinate = None
 
     def set(self, on: bool):
         if on == self.active:
             return
+        if sys.platform == "darwin":
+            try:
+                if on:
+                    import subprocess
+
+                    self._caffeinate = subprocess.Popen(
+                        ["caffeinate", "-d", "-u", "-w", str(os.getpid())],
+                        stdout=subprocess.DEVNULL,
+                        stderr=subprocess.DEVNULL,
+                    )
+                else:
+                    if self._caffeinate and self._caffeinate.poll() is None:
+                        self._caffeinate.terminate()
+                    self._caffeinate = None
+                self.active = on
+            except Exception:
+                pass
+            return
+
         try:
             from PySide6.QtDBus import QDBusConnection, QDBusInterface
         except ImportError:
@@ -601,6 +618,8 @@ class Player(QWidget):
             self.title.fs_btn.set_icon("fullscreen_exit" if self.isFullScreen() else "fullscreen")
             if not self.isFullScreen():
                 self._fs_top = self._fs_bottom = self._fs_right = False
+                if self._autofit_pending:
+                    QTimer.singleShot(100, self._autofit)
             self._layout()
             self._show_cursor()
         super().changeEvent(event)
@@ -710,9 +729,13 @@ class Player(QWidget):
     def _autofit(self):
         if not self._autofit_pending:
             return
-        # Leaving full screen or maximized is asynchronous on Wayland; a resize sent while the
+        if self.isFullScreen():
+            QTimer.singleShot(100, self._autofit)
+            return
+        # Leaving full screen or maximized is asynchronous on Wayland and macOS; a resize sent while the
         # compositor is still switching state gets lost, so wait for the transition to settle.
-        remaining = 0.5 - (time.monotonic() - self._state_changed)
+        settle_time = 0.8 if sys.platform == "darwin" else 0.5
+        remaining = settle_time - (time.monotonic() - self._state_changed)
         if remaining > 0:
             QTimer.singleShot(int(remaining * 1000) + 20, self._autofit)
             return
@@ -1321,8 +1344,11 @@ class Player(QWidget):
                 self.showMaximized()
             else:
                 self.showNormal()
+                if getattr(self, "_normal_geom", None) is not None:
+                    self.setGeometry(self._normal_geom)
         else:
             self._was_maximized = self.isMaximized()
+            self._normal_geom = self.geometry()
             self._fs_top = self._fs_bottom = self._fs_right = False
             self.showFullScreen()
 
@@ -1379,6 +1405,8 @@ class Player(QWidget):
             return
         if (self.width(), self.height()) != (width, height):
             self.resize(width, height)
+            if time.monotonic() < expires:
+                QTimer.singleShot(250, self._confirm_size)
 
     def set_window_scale(self, percent: int):
         if not self.has_file() or not self._has_video():
@@ -1831,8 +1859,37 @@ def start_server(player: Player) -> QLocalServer:
     return server
 
 
+class SamovarApplication(QApplication):
+    """QApplication supporting macOS QFileOpenEvent (opening files from Finder/Dock)."""
+
+    def __init__(self, argv: list[str]):
+        super().__init__(argv)
+        self.player: Player | None = None
+        self._queued_files: list[str] = []
+
+    def set_player(self, player: Player):
+        self.player = player
+        if self._queued_files:
+            self.player.open_paths(self._queued_files)
+            self._queued_files.clear()
+
+    def event(self, event: QEvent) -> bool:
+        if event.type() == QEvent.FileOpen:
+            url = event.url()
+            path = url.toLocalFile() if url.isValid() and url.isLocalFile() else event.file()
+            if path:
+                if self.player is not None:
+                    self.player.open_paths([path])
+                else:
+                    self._queued_files.append(path)
+            return True
+        return super().event(event)
+
+
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="samovar-lite", description="PotPlayer-style media player for Linux.")
+    parser = argparse.ArgumentParser(
+        prog="samovar-lite", description="PotPlayer-style media player for Linux and macOS."
+    )
     parser.add_argument("files", nargs="*", help="media files, folders, playlists, subtitles or URLs")
     parser.add_argument("--x11", action="store_true", help="run through X11/XWayland (enables always-on-top)")
     parser.add_argument("--wayland", action="store_true", help="force native Wayland")
@@ -1843,13 +1900,21 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(sys.argv[1:] if argv is None else argv)
 
     settings = Settings()
-    if args.x11 or (settings["use_x11"] and not args.wayland):
-        os.environ["QT_QPA_PLATFORM"] = "xcb"
-    elif args.wayland or (os.environ.get("WAYLAND_DISPLAY") and not os.environ.get("QT_QPA_PLATFORM")):
-        os.environ["QT_QPA_PLATFORM"] = "wayland;xcb"
+    if sys.platform != "darwin":
+        if args.x11 or (settings["use_x11"] and not args.wayland):
+            os.environ["QT_QPA_PLATFORM"] = "xcb"
+        elif args.wayland or (os.environ.get("WAYLAND_DISPLAY") and not os.environ.get("QT_QPA_PLATFORM")):
+            os.environ["QT_QPA_PLATFORM"] = "wayland;xcb"
+    else:
+        from PySide6.QtGui import QSurfaceFormat
+
+        fmt = QSurfaceFormat()
+        fmt.setVersion(4, 1)
+        fmt.setProfile(QSurfaceFormat.CoreProfile)
+        QSurfaceFormat.setDefaultFormat(fmt)
 
     paths = [p if is_url(p) else os.path.abspath(p) for p in args.files]
-    app = QApplication(sys.argv[:1])
+    app = SamovarApplication(sys.argv[:1])
     app.setApplicationName("Samovar Lite")
     app.setApplicationDisplayName("Samovar Lite")
     app.setDesktopFileName("samovar-lite")
@@ -1866,13 +1931,18 @@ def main(argv: list[str] | None = None) -> int:
     except Exception as exc:  # most likely libmpv is missing
         from PySide6.QtWidgets import QMessageBox
 
+        hint = (
+            "Install mpv (brew install mpv) or run ./install_mac.sh."
+            if sys.platform == "darwin"
+            else "Install libmpv (sudo apt install libmpv2) or run ./install.sh."
+        )
         QMessageBox.critical(
             None,
             "Samovar Lite",
-            "The playback engine could not start:\n\n%s\n\n"
-            "Install libmpv (sudo apt install libmpv2) or run ./setup.sh." % exc,
+            "The playback engine could not start:\n\n%s\n\n%s" % (exc, hint),
         )
         return 1
+    app.set_player(player)
     if not args.new:
         player._server = start_server(player)
     player.open_paths(paths)

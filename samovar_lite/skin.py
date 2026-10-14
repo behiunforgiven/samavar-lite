@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+import sys
 
 from PySide6.QtCore import QPointF, QRectF, Qt
 from PySide6.QtGui import QColor, QFont, QPainter, QPainterPath, QPalette, QPen, QPolygonF
@@ -39,7 +40,12 @@ VOLUME_W = 102
 MENU_BTN_W = 88
 TITLE_BTN_W = 24
 
-FONT_FAMILIES = ["Segoe UI", "Noto Sans", "Ubuntu Sans", "Ubuntu", "DejaVu Sans"]
+if sys.platform == "darwin":
+    FONT_FAMILIES = [".AppleSystemUIFont", "SF Pro Text", "Helvetica Neue", "Segoe UI", "Noto Sans", "DejaVu Sans"]
+    MONO_FAMILIES = ["SF Mono", "Menlo", "Monaco", "DejaVu Sans Mono", "monospace"]
+else:
+    FONT_FAMILIES = ["Segoe UI", "Noto Sans", "Ubuntu Sans", "Ubuntu", "DejaVu Sans"]
+    MONO_FAMILIES = ["DejaVu Sans Mono", "Noto Sans Mono", "Ubuntu Mono", "monospace"]
 
 
 def font(px: int = 12, bold: bool = False) -> QFont:
@@ -52,7 +58,7 @@ def font(px: int = 12, bold: bool = False) -> QFont:
 
 def mono_font(px: int = 12) -> QFont:
     f = QFont()
-    f.setFamilies(["DejaVu Sans Mono", "Noto Sans Mono", "Ubuntu Mono", "monospace"])
+    f.setFamilies(MONO_FAMILIES)
     f.setPixelSize(px)
     return f
 
