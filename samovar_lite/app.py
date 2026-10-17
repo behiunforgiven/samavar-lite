@@ -1829,13 +1829,17 @@ class Player(QWidget):
 # single instance
 # ================================================================================================
 def send_to_running(paths: list[str]) -> bool:
+    if not paths:
+        return False
     socket = QLocalSocket()
     socket.connectToServer(IPC_NAME)
-    if not socket.waitForConnected(300):
+    if not socket.waitForConnected(500):
         return False
-    socket.write(json.dumps({"paths": paths}).encode("utf-8"))
+    payload = json.dumps({"paths": paths}).encode("utf-8")
+    socket.write(payload)
     socket.flush()
     socket.waitForBytesWritten(1000)
+    socket.waitForReadyRead(200)
     socket.disconnectFromServer()
     return True
 
@@ -1864,6 +1868,8 @@ def start_server(player: Player) -> QLocalServer:
 
         socket.readyRead.connect(read)
         socket.disconnected.connect(socket.deleteLater)
+        if socket.bytesAvailable() > 0:
+            read()
 
     server.newConnection.connect(on_connection)
     server.listen(IPC_NAME)
@@ -1887,7 +1893,10 @@ class SamovarApplication(QApplication):
     def event(self, event: QEvent) -> bool:
         if event.type() == QEvent.FileOpen:
             url = event.url()
-            path = url.toLocalFile() if url.isValid() and url.isLocalFile() else event.file()
+            if url.isValid():
+                path = url.toLocalFile() if url.isLocalFile() else url.toString()
+            else:
+                path = event.file()
             if path:
                 if self.player is not None:
                     self.player.open_paths([path])

@@ -147,6 +147,7 @@ class Engine(QObject):
             "reset_on_next_file": "sub-delay,audio-delay,video-zoom,video-pan-x,video-pan-y,"
             "video-rotate,video-aspect-override,ab-loop-a,ab-loop-b",
             "ytdl": True,
+            "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
         }
         if settings["sub_font"]:
             options["sub_font"] = settings["sub_font"]

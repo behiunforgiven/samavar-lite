@@ -65,6 +65,13 @@ with open(plist_path, 'rb') as fp:
 
 pl['CFBundleShortVersionString'] = __version__
 pl['CFBundleVersion'] = __version__
+pl['CFBundleURLTypes'] = [
+    {
+        'CFBundleURLName': 'Media Stream URLs',
+        'CFBundleTypeRole': 'Viewer',
+        'CFBundleURLSchemes': ['http', 'https', 'rtmp', 'rtsp', 'mms', 'ftp'],
+    }
+]
 pl['CFBundleDocumentTypes'] = [
     {
         'CFBundleTypeName': 'Video and Audio Files',
